@@ -39,7 +39,7 @@ export default class CameraPage extends React.Component {
     this.setState(
       { capturing: false, captures: [photoData.uri, ...this.state.captures] },
       () => {
-        console.log(this.state.captures)
+        // console.log("picture")
         AsyncStorage.setItem(
           "Photos",	          
           JSON.stringify({ captures: this.state.captures }),
