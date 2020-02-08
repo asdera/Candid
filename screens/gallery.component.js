@@ -74,7 +74,7 @@ export default class Gallery extends React.Component {
     }
     console.log(captures);
     return (
-      <View>
+      <View onPress={this.retrieveData}>
         <Modal
           animationType="slide"
           transparent={false}
@@ -82,10 +82,22 @@ export default class Gallery extends React.Component {
         >
           <SliderBox sliderBoxHeight={600} images={this.state.captures} />
         </Modal>
+        <TouchableOpacity
+          onPress={() => {
+            this.retrieveData()
+          }}
+          style={styles.galleryImageContainer}
+        >
+          <Button title="Refresh"></Button>
+        </TouchableOpacity>
+
         <View style={styles.galleryContainer}>
           {captures.map(uri => (
             <TouchableOpacity
-              onPress={() => this.addPicture(this.state.uri_dir + uri)}
+              onPress={() => {
+                this.addPicture(this.state.uri_dir + uri)
+                this.retrieveData()
+              }}
               style={styles.galleryImageContainer}
               key={uri}
             >
@@ -107,12 +119,11 @@ export default class Gallery extends React.Component {
 
   retrieveData = async () => {
     try {
+      console.log("ok")
       const value = await AsyncStorage.getItem("Photos");
       const mem = JSON.parse(value);
-      console.log(value)
-      console.log(mem) 
       // console.log(mem.captures)
-      this.setState({ captures: mem.captures, isLoading: false }, () => {console.log(mem.captures)});
+      this.setState({ captures: mem.captures, isLoading: false }, () => {});
     } catch (error) {}
   };
 }

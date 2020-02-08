@@ -1,6 +1,7 @@
 import React from "react";
 import { Text, View, TouchableOpacity, AsyncStorage } from "react-native";
 import * as Permissions from "expo-permissions";
+import * as FaceDetector from 'expo-face-detector';
 import { Camera } from "expo-camera";
 import axios from "axios";
 
@@ -34,6 +35,7 @@ export default class CameraPage extends React.Component {
   };
 
   handleShortCapture = async () => {
+    console.log(this)
     const options = { quality: 0.1, base64: true };
     const photoData = await this.camera.takePictureAsync(options);
     this.setState(
@@ -137,6 +139,16 @@ export default class CameraPage extends React.Component {
           }); */
   };
 
+  handleFacesDetected = ({ faces }) => {
+    if(faces.length > 0) {
+      console.log(faces[0].smilingProbability)
+      this.setState({ faces });
+      if (faces[0].smilingProbability < 0.05) {
+        this.handleShortCapture();
+      }
+    }
+  };
+
   render() {
     const {
       hasCameraPermission,
@@ -159,6 +171,14 @@ export default class CameraPage extends React.Component {
             type={cameraType}
             flashMode={Camera.Constants.FlashMode.off}
             style={styles.preview}
+            onFacesDetected={this.handleFacesDetected}
+            faceDetectorSettings={{
+              mode: FaceDetector.Constants.Mode.fast,
+              detectLandmarks: FaceDetector.Constants.Landmarks.none,
+              runClassifications: FaceDetector.Constants.Classifications.all,
+              minDetectionInterval: 100,
+              tracking: true,
+            }}
             ref={camera => (this.camera = camera)}
           />
         </View>
